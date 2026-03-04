@@ -1,0 +1,186 @@
+        .fab-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            background: #6AA6A6;
+            border: none;
+            color: white;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            border: 3px solid white;
+            z-index: 9999;
+        }
+
+        .fab-btn:hover {
+            background: #4f8a8a;
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Modal Form */
+        .upload-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .upload-modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 30px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border: 3px solid #6AA6A6;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #6AA6A6;
+        }
+
+        .modal-header h3 {
+            color: #175252;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: #6AA6A6;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+
+        .close-btn:hover {
+            background: #f0f0f0;
+            transform: rotate(90deg);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #175252;
+            font-weight: 600;
+        }
+
+        .form-group input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #6AA6A6;
+            border-radius: 15px;
+            background: #f9f9f9;
+        }
+
+        .form-group input[type="date"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #6AA6A6;
+            border-radius: 15px;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #f9a51a;
+            box-shadow: 0 0 0 3px rgba(106,166,166,0.2);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background: #6AA6A6;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid white;
+        }
+
+        .btn-submit:hover {
+            background: #4f8a8a;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(106,166,166,0.4);
+        }
+
+        .preview-area {
+            margin-top: 15px;
+            text-align: center;
+            display: none;
+        }
+
+        .preview-area.show {
+            display: block;
+        }
+
+        .preview-area img {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 15px;
+            border: 3px solid #6AA6A6;
+        }
+
+        @media (max-width: 768px) {
+            .fab-btn {
+                bottom: 20px;
+                right: 20px;
+                width: 55px;
+                height: 55px;
+                font-size: 1.8rem;
+            }
+            
+            .modal-content {
+                width: 95%;
+                padding: 20px;
+            }
+        }

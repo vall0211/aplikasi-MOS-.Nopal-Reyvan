@@ -1,0 +1,47 @@
+{% extends 'index.html'%}
+{% block style %}
+    <link rel="stylesheet" href="{{url_for('static', filename='css/image.css')}}">
+{% endblock %}
+{% block content %}
+    <div class="gallery-container">
+        
+        <!-- Header Galeri -->
+        <div class="gallery-header">
+            <i class="bi bi-images"></i>
+            <h2>Galeri Kenangan Sekolah</h2>
+        </div>
+        {% for tahun, fotos in grouped_media.items() %}
+        <div class="year-section">
+            <div class="year-badge">
+            <a href="{{url_for('foto_acak',tahun=tahun)}}" style="text-decoration: none;">
+                <i class="bi bi-calendar3"></i> {{ tahun }}
+            </div>
+            </a>
+            <div class="photo-row">
+                {% for p in fotos %}
+                <div class="photo-item">
+                    <div class="photo-image">
+                        <img src="{{ url_for('static', filename='uploads/' + p.foto) }}" alt="{{ p.keterangan }}">
+                    </div>
+                    <div class="photo-caption">
+                        <p>{{ p.keterangan }}</p>
+                        <small>{{ p.tanggal_diambil }}</small>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+        <!-- Footer Galeri -->
+        <div class="gallery-footer">
+            <div class="footer-left">
+                <i class="bi bi-folder"></i>
+                <span>Total {{ fotos|length }} foto kenangan</span>
+            </div>
+            <div class="footer-right">
+                <i class="bi bi-three-dots-vertical"></i>
+                <span>{{ grouped_media|length }} tahun</span>
+            </div>
+        </div>
+    </div>
+{% endblock %}

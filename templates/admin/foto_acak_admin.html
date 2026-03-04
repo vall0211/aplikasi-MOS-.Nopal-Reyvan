@@ -1,0 +1,392 @@
+{% extends 'admin.html'%}
+{% block style %}
+<link rel="stylesheet" href="{{url_for('static', filename='css/foto_acak.css')}}">
+<link rel="stylesheet" href="{{url_for('static', filename='css/fab.css')}}"
+{% endblock %}
+{% block content %}
+<div class="gallery-wrapper" id="galleryWrapper">
+    <!-- Header -->
+    <div class="gallery-header">
+        <div class="title-section">
+            <i class="bi bi-dice-6-fill"></i>
+            <h1>Galeri <br>Foto Acak</h1>
+        </div>
+        <div class="action-buttons">
+            <a href="{{ url_for('admin') }}" class="btn-custom btn-outline-custom">
+                <i class="bi bi-arrow-left"></i> Kembali
+            </a>
+            <button class="btn-custom btn-outline-custom" id="resetPosisiBtn">
+                <i class="bi bi-shuffle"></i> Acak Ulang Posisi
+            </button>
+        </div>
+    </div>
+
+    <!-- Info Tahun -->
+    {% if tahun %}
+    <div class="tahun-info">
+        <i class="bi bi-calendar-check"></i>
+        <span>Menampilkan foto tahun {{ tahun }}</span>
+        <a href="{{ url_for('foto_acak') }}" class="btn-custom btn-sm">Tampilkan Semua</a>
+    </div>
+    {% endif %}
+
+    <!-- Grid Foto -->
+    <div id="loading" class="loading">
+        <div class="spinner-border mb-3" role="status"></div>
+        <div>Memuat foto...</div>
+    </div>
+    <div class="photo-grid" id="photoGrid"></div>
+
+    <!-- Footer -->
+    <div class="gallery-footer">
+        <div class="footer-left">
+            <i class="bi bi-images"></i>
+            <span id="photoCount">0 foto</span>
+        </div>
+        <button class="btn-custom" id="resetSelectedBtn">
+            <i class="bi bi-arrow-repeat"></i> Reset Fokus
+        </button>
+        <div class="footer-right">
+            <i class="bi bi-info-circle"></i>
+            <span>Klik foto untuk fokus ke tengah</span>
+        </div>
+    </div>
+</div>
+
+   <!-- Tombol Floating Plus -->
+    <button class="fab-btn" id="fabBtn">
+        <i class="bi bi-plus-lg"></i>
+    </button>
+
+    <!-- Modal Form Upload -->
+    <div class="upload-modal" id="uploadModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="bi bi-cloud-upload me-2"></i>Upload Foto</h3>
+                <button class="close-btn" id="closeModal">&times;</button>
+            </div>
+            
+            <form action="{{ url_for('upload_foto') }}" method="post" enctype="multipart/form-data" id="uploadForm">
+                <div class="form-group">
+                    <label for="foto">
+                        <i class="bi bi-image me-1"></i>Pilih Foto
+                    </label>
+                    <input type="file" name="foto" id="fotoInput" accept="image/*" required>
+                </div>
+                
+                <div class="preview-area" id="previewArea">
+                    <img id="imagePreview" src="#" alt="Preview">
+                </div>
+                
+                <div class="form-group">
+                    <label for="tanggal">
+                        <i class="bi bi-calendar me-1"></i>Tanggal Diambil
+                    </label>
+                    <input type="date" name="tanggal_diambil" id="tanggalInput"  required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="keterangan">
+                        <i class="bi bi-chat me-1"></i>Keterangan (opsional)
+                    </label>
+                    <input type="text" name="keterangan" id="keteranganInput" placeholder="Contoh: Class Meeting 2024" style="width: 100%; padding: 12px 15px; border: 2px solid #6AA6A6; border-radius: 15px;">
+                </div>
+                
+                <button type="submit" class="btn-submit">
+                    <i class="bi bi-check-lg me-2"></i>Upload Foto
+                </button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script%}
+<script>
+    const galleryWrapper = document.getElementById('galleryWrapper');
+    const photoGrid = document.getElementById('photoGrid');
+    const loading = document.getElementById('loading');
+    const photoCount = document.getElementById('photoCount');
+    
+    let fotoData = [];
+
+    // Mendapatkan tahun dari URL parameter
+    function getTahunFromUrl() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get('tahun');
+    }
+
+    // Fungsi untuk load foto dari server berdasarkan tahun
+ async function loadFotoFromServer() {
+    try {
+        loading.style.display = 'block';
+        
+        // 1. Ambil tahun dari URL (misal: ?tahun=2022)
+        const urlParams = new URLSearchParams(window.location.search);
+        const tahun = urlParams.get('tahun');
+        
+        // 2. Bangun URL API
+        let url = '/api/foto';
+        if (tahun) {
+            url += `?tahun=${tahun}`;
+        }
+        
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        if (data.success) {
+            // Mapping data dari backend ke format yang dibutuhkan JS
+            fotoData = data.foto.map(f => ({
+                id: f.id,
+                judul: f.keterangan || 'Tanpa Judul',
+                tahun: f.tahun || '-',
+                filebase64: f.foto ? '/static/uploads/' + f.foto : null,
+                posisi_x: null, // Reset posisi agar diacak ulang saat pindah tahun
+                posisi_y: null
+            }));
+            renderPhotos();
+        }
+    } catch (error) {
+        console.error('Gagal load foto:', error);
+        // ... (tampilan error Anda)
+    } finally {
+        loading.style.display = 'none';
+    }
+}
+    // Fungsi untuk mengecek tabrakan posisi
+    function cekTabrakan(x, y, existingPositions, minJarak = 200) {
+        for (let pos of existingPositions) {
+            const jarak = Math.sqrt(Math.pow(x - pos[0], 2) + Math.pow(y - pos[1], 2));
+            if (jarak < minJarak) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Generate posisi acak
+    function generatePosisi(existingPositions, maxWidth = 1000, maxHeight = 600) {
+        const maxAttempts = 300;
+        const fotoWidth = 220;
+        const fotoHeight = 280;
+        const margin = 30;
+        
+        const maxX = maxWidth - fotoWidth - margin;
+        const maxY = maxHeight - fotoHeight - margin;
+        
+        if (maxX <= margin || maxY <= margin) {
+            return [margin, margin];
+        }
+        
+        for (let i = 0; i < maxAttempts; i++) {
+            const x = Math.floor(Math.random() * (maxX - margin + 1)) + margin;
+            const y = Math.floor(Math.random() * (maxY - margin + 1)) + margin;
+            
+            if (!cekTabrakan(x, y, existingPositions)) {
+                return [x, y];
+            }
+        }
+        
+        // Fallback
+        return [margin, margin];
+    }
+
+    // Render foto ke grid
+    function renderPhotos() {
+        const fotos = fotoData;
+        
+        photoCount.textContent = `${fotos.length} foto`;
+        
+        if (fotos.length === 0) {
+            photoGrid.innerHTML = `
+                <div class="empty-state">
+                    <i class="bi bi-images"></i>
+                    <h4>Tidak Ada Foto</h4>
+                    <p class="text-muted">Belum ada foto untuk ditampilkan</p>
+                </div>
+            `;
+            return;
+        }
+        
+        // Hitung ukuran grid
+        const gridRect = photoGrid.getBoundingClientRect();
+        const gridWidth = Math.max(gridRect.width, 800);
+        const gridHeight = Math.max(gridRect.height, 600);
+        
+        // Kumpulkan posisi yang sudah ada
+        const existingPositions = fotos.map(f => [f.posisi_x, f.posisi_y]).filter(p => p[0] && p[1]);
+        
+        photoGrid.innerHTML = '';
+        
+        fotos.forEach((foto, index) => {
+            // Generate posisi jika belum ada
+            if (!foto.posisi_x || !foto.posisi_y) {
+                const [x, y] = generatePosisi(existingPositions, gridWidth, gridHeight);
+                foto.posisi_x = x;
+                foto.posisi_y = y;
+                existingPositions.push([x, y]);
+            }
+            
+            const card = document.createElement('div');
+            card.className = 'photo-card';
+            card.dataset.id = foto.id;
+            card.dataset.index = index;
+            card.style.left = foto.posisi_x + 'px';
+            card.style.top = foto.posisi_y + 'px';
+            
+            // Tampilkan gambar
+            let imageContent = '';
+            if (foto.filebase64) {
+                imageContent = `<img src="${foto.filebase64}" alt="${foto.judul}">`;
+            } else {
+                imageContent = `<div class="no-image"><i class="bi bi-image"></i></div>`;
+            }
+            
+            card.innerHTML = `
+                <div class="photo-image">
+                    ${imageContent}
+                </div>
+                <div class="photo-caption">
+                    <p>${foto.judul || 'Tanpa Judul'}</p>
+                    <small><i class="bi bi-calendar3"></i> ${foto.tahun || '-'}</small>
+                </div>
+            `;
+            
+            photoGrid.appendChild(card);
+        });
+    }
+
+    // Event klik pada grid
+    photoGrid.addEventListener('click', (e) => {
+        const card = e.target.closest('.photo-card');
+        if (!card) return;
+
+        const isSelected = card.classList.contains('selected');
+
+        if (isSelected) {
+            // Reset semua
+            photoGrid.classList.remove('blur-active');
+            document.querySelectorAll('.photo-card').forEach(c => {
+                c.classList.remove('selected');
+            });
+            galleryWrapper.classList.remove('has-selected');
+        } else {
+            // Fokus ke card yang diklik
+            photoGrid.classList.add('blur-active');
+            document.querySelectorAll('.photo-card').forEach(c => {
+                c.classList.remove('selected');
+            });
+            card.classList.add('selected');
+            galleryWrapper.classList.add('has-selected');
+        }
+    });
+
+    // Reset fokus
+    document.getElementById('resetSelectedBtn').addEventListener('click', () => {
+        photoGrid.classList.remove('blur-active');
+        document.querySelectorAll('.photo-card').forEach(c => {
+            c.classList.remove('selected');
+        });
+        galleryWrapper.classList.remove('has-selected');
+    });
+
+    // Reset posisi
+    document.getElementById('resetPosisiBtn').addEventListener('click', () => {
+        if (fotoData.length === 0) return;
+        
+        const gridRect = photoGrid.getBoundingClientRect();
+        const gridWidth = Math.max(gridRect.width, 800);
+        const gridHeight = Math.max(gridRect.height, 600);
+        
+        const existingPositions = [];
+        
+        fotoData.forEach(foto => {
+            const [x, y] = generatePosisi(existingPositions, gridWidth, gridHeight);
+            foto.posisi_x = x;
+            foto.posisi_y = y;
+            existingPositions.push([x, y]);
+        });
+        
+        renderPhotos();
+    });
+
+    // Load foto saat halaman dimuat
+    document.addEventListener('DOMContentLoaded', () => {
+        loadFotoFromServer();
+    });
+
+    // Render ulang saat ukuran window berubah
+    window.addEventListener('resize', () => {
+        renderPhotos();
+    });
+</script>
+<script>
+    // Ambil elemen yang dibutuhkan
+    const fabBtn = document.getElementById('fabBtn');
+    const modal = document.getElementById('uploadModal');
+    const closeBtn = document.getElementById('closeModal');
+    const fotoInput = document.getElementById('fotoInput');
+    const previewArea = document.getElementById('previewArea');
+    const imagePreview = document.getElementById('imagePreview');
+    
+    // Buka modal saat tombol plus diklik
+    fabBtn.addEventListener('click', function() {
+        modal.classList.add('show');
+    });
+    
+    // Tutup modal saat tombol close diklik
+    closeBtn.addEventListener('click', function() {
+        modal.classList.remove('show');
+        // Reset form
+        document.getElementById('uploadForm').reset();
+        previewArea.classList.remove('show');
+    });
+    
+    // Tutup modal jika klik di luar modal
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            modal.classList.remove('show');
+            document.getElementById('uploadForm').reset();
+            previewArea.classList.remove('show');
+        }
+    });
+    
+    // Preview gambar saat file dipilih
+    fotoInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        
+        if (file) {
+            // Validasi tipe file
+            const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+            if (!validTypes.includes(file.type)) {
+                alert('Tipe file tidak didukung! Hanya gambar (JPG, PNG, GIF, WEBP)');
+                fotoInput.value = '';
+                previewArea.classList.remove('show');
+                return;
+            }
+            
+            // Validasi ukuran (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Ukuran file terlalu besar! Maksimal 5MB');
+                fotoInput.value = '';
+                previewArea.classList.remove('show');
+                return;
+            }
+            
+            // Tampilkan preview
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imagePreview.src = e.target.result;
+                previewArea.classList.add('show');
+            };
+            reader.readAsDataURL(file);
+        } else {
+            previewArea.classList.remove('show');
+        }
+    });
+    
+    // Set tanggal hari ini sebagai default
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('tanggalInput').value = today;
+</script>
+
+{% endblock %}

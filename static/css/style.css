@@ -1,0 +1,301 @@
+        body {
+            background-color: #D9E3E4;  /* warna kedua */
+            font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        /* ===== NAVIGASI ATAS (menyambung dengan sidebar) ===== */
+        .top-nav {
+            background-color: #6AA6A6;  /* warna utama sama dengan sidebar */
+            height: 70px;
+            position: fixed;
+            top: 0;
+            left: 260px;                /* mulai dari ujung sidebar (lebar sidebar 260px) */
+            right: 0;
+            z-index: 9;
+            display: flex;
+            align-items: center;
+            padding: 0 30px;
+            box-shadow: 0 4px 10px rgba(0, 40, 40, 0.15);
+            border-bottom: 2px solid #4f8a8a;
+        }
+
+        /* container flex untuk navigasi atas */
+        .top-nav .nav-container {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;  /* konten ke kanan */
+            width: 100%;
+        }
+
+        /* satu item teks biasa di sebelah kanan */
+        .top-nav .text-item-right {
+            color: #0a2e2e;
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 4px 8px;
+        }
+
+        .top-nav .text-item-right i {
+            font-size: 1.3rem;
+            color: #0d3d3d;
+        }
+
+        /* SIDEBAR KIRI (warna utama #6AA6A6) - tinggi penuh */
+        .sidebar {
+            width: 260px;
+            height: 100vh;
+            background-color: #6AA6A6;   /* utama */
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding: 28px 16px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 4px 0 12px rgba(0, 40, 40, 0.15);
+            z-index: 10;
+        }
+
+        .sidebar h5 {
+            font-weight: 800;
+            font-size: 1.8rem;
+            line-height: 1.2;
+            margin-bottom: 30px;
+            color: #0b3535;
+            letter-spacing: -0.5px;
+            padding-left: 8px;
+        }
+
+        .sidebar a {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            color: #0a2e2e;
+            text-decoration: none;
+            margin-bottom: 20px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            padding: 10px 16px;
+            border-radius: 40px;
+            transition: all 0.2s;
+        }
+
+        .sidebar a i {
+            font-size: 1.5rem;
+            width: 28px;
+            color: #0d3d3d;
+        }
+
+        .sidebar a:hover {
+            background-color: #bcd8d8;
+            transform: translateX(5px);
+            color: #021c1c;
+        }
+
+        .sidebar a.active {
+            background-color: #D9E3E4;   /* warna kedua untuk menu aktif */
+            color: #063131;
+            font-weight: 700;
+            box-shadow: 0 6px 12px rgba(0, 50, 50, 0.2);
+        }
+
+        .login-btn {
+            margin-top: auto;
+            padding: 20px 8px 10px 8px;
+        }
+
+        .login-btn .btn-login {
+            background-color: #d0e4e4;
+            border: none;
+            color: #063f3f;
+            font-weight: 600;
+            padding: 12px 20px;
+            border-radius: 60px;
+            width: 100%;
+            transition: 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .login-btn .btn-login:hover {
+            background-color: #ffffffcc;
+            border-color: #4f8a8a;
+            color: #023131;
+        }
+
+        /* MAIN CONTENT - dengan top padding karena ada top-nav */
+        .main-content {
+            margin-left: 260px;         /* ruang untuk sidebar */
+            margin-top: 70px;            /* ruang untuk top-nav */
+            padding: 0;
+            min-height: calc(100vh - 70px);
+            position: relative;
+        }
+
+        /* wrapper untuk mengatur posisi card */
+        .card-position-wrapper {
+            display: flex;
+            justify-content: flex-start;
+            align-items: flex-start;
+            min-height: calc(100vh - 70px);
+            padding: 30px 0 0 20px;     /* jarak dari atas dan kiri */
+            margin: 0;
+        }
+
+        /* ===== FOLDER CARD dengan LIPATAN GAMBAR ===== */
+        .folder-school-card {
+            width: 420px;
+            border-radius: 28px 28px 20px 20px;
+            overflow: hidden;
+            box-shadow: 0 18px 30px -8px rgba(27, 77, 77, 0.4);
+            transition: transform 0.2s ease;
+            background: transparent;
+            border: none;
+
+            /* geser sedikit ke kiri dan ke atas, tapi tetap ada jarak */
+            margin-left: -15px;
+            margin-top: -10px;
+        }
+
+        .folder-school-card:hover {
+            transform: translateY(-8px);
+        }
+
+        /* header gradien orange -> #6AA6A6 */
+        .folder-header-custom {
+            background: linear-gradient(145deg, #f9a51a, #6AA6A6);
+            color: white;
+            padding: 26px 24px 20px 24px;
+            font-weight: 800;
+            font-size: 1.9rem;
+            line-height: 1.2;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            border-radius: 24px 24px 0 0;
+            position: relative;
+            z-index: 3;
+        }
+
+        /* LIPATAN KECIL DIGANTI DENGAN GAMBAR */
+        .folder-header-custom .folder-tab-image {
+            position: absolute;
+            bottom: -25px;        /* atur posisi sesuai kebutuhan */
+            right: 30px;
+            width: 70px;
+            height: 70px;
+            z-index: 5;
+            pointer-events: none; /* agar gambar tidak mengganggu klik */
+        }
+
+        .folder-header-custom .folder-tab-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 4px rgba(0,0,0,0.1));
+        }
+
+        /* BODY FOLDER */
+        .folder-body-custom {
+            background-color: #fefef5;
+            padding: 32px 24px 24px 24px;
+            border-radius: 0 0 28px 28px;
+            box-shadow: inset 0 8px 12px rgba(106,166,166,0.1), 0 8px 18px rgba(0,40,40,0.2);
+            position: relative;
+            border-left: 2px solid rgba(106,166,166,0.5);
+            border-right: 2px solid rgba(106,166,166,0.5);
+            border-bottom: 2px solid #6AA6A6;
+        }
+
+        .folder-content {
+            min-height: 160px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            color: #264e4e;
+        }
+
+        .folder-content p {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            font-weight: 400;
+        }
+
+        .folder-content i {
+            color: #6AA6A6;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .folder-footer-custom {
+            background-color: transparent;
+            padding: 18px 8px 8px 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 2px dashed #6AA6A6;
+            margin-top: 16px;
+            color: #1d5b5b;
+        }
+
+        .folder-footer-custom i {
+            font-size: 1.8rem;
+            color: #4e8a8a;
+            transition: 0.2s;
+            cursor: default;
+        }
+
+        .folder-footer-custom i:hover {
+            color: #023d3d;
+        }
+
+        .bi-three-dots-vertical {
+            transform: rotate(90deg);
+        }
+
+        /* responsive */
+        @media (max-width: 768px) {
+            .top-nav {
+                left: 0;
+                padding: 0 15px;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                padding: 16px;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                margin-top: 0;
+                padding: 20px;
+            }
+            
+            .card-position-wrapper {
+                justify-content: center;
+                padding: 20px 10px;
+                min-height: auto;
+            }
+            
+            .folder-school-card {
+                margin-left: 0;
+                margin-top: 0;
+                width: 100%;
+                max-width: 420px;
+            }
+            
+            .top-nav {
+                position: relative;
+                width: 100%;
+            }
+
+            .folder-header-custom .folder-tab-image {
+                width: 50px;
+                height: 25px;
+                bottom: -10px;
+            }
+        }

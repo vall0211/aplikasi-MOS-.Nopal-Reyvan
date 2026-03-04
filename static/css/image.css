@@ -1,0 +1,326 @@
+        :root {
+            --utama: #6AA6A6;
+            --kedua: #D9E3E4;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--kedua);
+            font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+            padding: 40px;
+        }
+
+        /* Container galeri */
+        .gallery-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(2px);
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 15px 30px rgba(0, 40, 40, 0.15);
+            border: 1px solid rgba(106, 166, 166, 0.3);
+        }
+
+        /* Header galeri */
+        .gallery-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+
+        .gallery-header i {
+            font-size: 3rem;
+            color: var(--utama);
+        }
+
+        .gallery-header h2 {
+            color: #175252;
+            font-size: 2.2rem;
+            font-weight: 700;
+        }
+
+        /* Setiap section tahun */
+        .year-section {
+            margin-bottom: 50px;
+        }
+
+        /* Badge tahun (gradien orange ke utama) */
+        .year-badge {
+            background: linear-gradient(145deg, #f9a51a, var(--utama));
+            color: white;
+            font-weight: 700;
+            font-size: 1.8rem;
+            padding: 12px 30px;
+            border-radius: 60px;
+            display: inline-block;
+            margin-bottom: 25px;
+            box-shadow: 0 6px 15px rgba(0, 40, 40, 0.25);
+            border: 2px solid #4f8a8a;
+            letter-spacing: 1px;
+        }
+
+        .year-badge i {
+            margin-right: 10px;
+            font-size: 1.8rem;
+        }
+
+        /* Grid foto - flexbox dengan gap */
+        .photo-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            margin-bottom: 20px;
+        }
+
+        /* Item foto individual */
+        .photo-item {
+            flex: 1 1 calc(25% - 25px); /* 4 foto per baris dengan gap 25px */
+            min-width: 220px;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 40, 40, 0.2);
+            transition: all 0.3s ease;
+            border: 2px solid var(--utama);
+        }
+
+        .photo-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 30px rgba(0, 70, 70, 0.3);
+        }
+
+        /* Container gambar dengan aspect ratio 1:1 */
+        .photo-image {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+        }
+
+        .photo-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+            display: block;
+        }
+
+        .photo-item:hover .photo-image img {
+            transform: scale(1.1);
+        }
+
+        /* Caption di bawah foto */
+        .photo-caption {
+            padding: 15px 12px;
+            text-align: center;
+            background-color: #f8fefe;
+            border-top: 2px solid var(--utama);
+        }
+
+        .photo-caption p {
+            margin: 0 0 5px 0;
+            color: #1d5b5b;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .photo-caption small {
+            color: #4f8a8a;
+            font-size: 0.9rem;
+            display: block;
+        }
+
+        /* Footer galeri */
+        .gallery-footer {
+            margin-top: 40px;
+            padding-top: 25px;
+            border-top: 3px dashed var(--utama);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #1d5b5b;
+            font-size: 1.1rem;
+        }
+
+        .gallery-footer i {
+            font-size: 2rem;
+            color: #4e8a8a;
+        }
+
+        .footer-left, .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .photo-item {
+                flex: 1 1 calc(50% - 25px); /* 2 foto per baris di tablet */
+            }
+            
+            .gallery-header h2 {
+                font-size: 1.8rem;
+            }
+            
+            .year-badge {
+                font-size: 1.5rem;
+                padding: 10px 25px;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .photo-item {
+                flex: 1 1 100%; /* 1 foto per baris di mobile */
+            }
+            
+            .gallery-container {
+                padding: 20px;
+            }
+            
+            .gallery-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .year-badge {
+                font-size: 1.3rem;
+                padding: 8px 20px;
+            }
+        }
+            /* Tambahan styling untuk empty state dan no image */
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            background: #f8f9fa;
+            border-radius: 20px;
+            color: #6c757d;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #adb5bd;
+        }
+
+        .no-image {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 3rem;
+        }
+
+        .photo-card {
+            position: absolute;
+            width: 220px;
+            height: 280px;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .photo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+
+        .photo-card.selected {
+            transform: scale(1.1);
+            z-index: 1000;
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.4);
+            border: 3px solid #667eea;
+        }
+
+        .photo-grid.blur-active .photo-card:not(.selected) {
+            filter: blur(3px);
+            opacity: 0.5;
+        }
+
+        .photo-image {
+            width: 100%;
+            height: 180px;
+            overflow: hidden;
+        }
+
+        .photo-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .photo-caption {
+            padding: 12px;
+            background: white;
+        }
+
+        .photo-caption p {
+            margin: 0;
+            font-weight: 500;
+            color: #333;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .photo-caption small {
+            color: #666;
+            font-size: 0.8rem;
+        }
+
+        /* Loading spinner */
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #667eea;
+        }
+
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+        }
+
+        /* Tahun info */
+        .tahun-info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 50px;
+            margin-bottom: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tahun-info i {
+            font-size: 1.2rem;
+        }
+
+        .btn-sm {
+            padding: 5px 15px;
+            font-size: 0.9rem;
+            background: white;
+            color: #667eea;
+            border: none;
+            border-radius: 20px;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .btn-sm:hover {
+            background: #f0f0f0;
+            color: #764ba2;
+        }

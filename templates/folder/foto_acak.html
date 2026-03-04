@@ -1,0 +1,277 @@
+{% extends 'index.html'%}
+{% block style %}
+<link rel="stylesheet" href="{{url_for('static', filename='css/foto_acak.css')}}">
+{% endblock %}
+{% block content %}
+<div class="gallery-wrapper" id="galleryWrapper">
+    <!-- Header -->
+    <div class="gallery-header">
+        <div class="title-section">
+            <i class="bi bi-dice-6-fill"></i>
+            <h1>Galeri <br>Foto Acak</h1>
+        </div>
+        <div class="action-buttons">
+            <a href="{{ url_for('image') }}" class="btn-custom btn-outline-custom">
+                <i class="bi bi-arrow-left"></i> Kembali
+            </a>
+            <button class="btn-custom btn-outline-custom" id="resetPosisiBtn">
+                <i class="bi bi-shuffle"></i> Acak Ulang Posisi
+            </button>
+        </div>
+    </div>
+
+    <!-- Info Tahun -->
+    {% if tahun %}
+    <div class="tahun-info">
+        <i class="bi bi-calendar-check"></i>
+        <span>Menampilkan foto tahun {{ tahun }}</span>
+        <a href="{{ url_for('foto_acak') }}" class="btn-custom btn-sm">Tampilkan Semua</a>
+    </div>
+    {% endif %}
+
+    <!-- Grid Foto -->
+    <div id="loading" class="loading">
+        <div class="spinner-border mb-3" role="status"></div>
+        <div>Memuat foto...</div>
+    </div>
+    <div class="photo-grid" id="photoGrid"></div>
+
+    <!-- Footer -->
+    <div class="gallery-footer">
+        <div class="footer-left">
+            <i class="bi bi-images"></i>
+            <span id="photoCount">0 foto</span>
+        </div>
+        <button class="btn-custom" id="resetSelectedBtn">
+            <i class="bi bi-arrow-repeat"></i> Reset Fokus
+        </button>
+        <div class="footer-right">
+            <i class="bi bi-info-circle"></i>
+            <span>Klik foto untuk fokus ke tengah</span>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script%}
+<script>
+    const galleryWrapper = document.getElementById('galleryWrapper');
+    const photoGrid = document.getElementById('photoGrid');
+    const loading = document.getElementById('loading');
+    const photoCount = document.getElementById('photoCount');
+    
+    let fotoData = [];
+
+    // Mendapatkan tahun dari URL parameter
+    function getTahunFromUrl() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get('tahun');
+    }
+
+    // Fungsi untuk load foto dari server berdasarkan tahun
+ async function loadFotoFromServer() {
+    try {
+        loading.style.display = 'block';
+        
+        // 1. Ambil tahun dari URL (misal: ?tahun=2022)
+        const urlParams = new URLSearchParams(window.location.search);
+        const tahun = urlParams.get('tahun');
+        
+        // 2. Bangun URL API
+        let url = '/api/foto';
+        if (tahun) {
+            url += `?tahun=${tahun}`;
+        }
+        
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        if (data.success) {
+            // Mapping data dari backend ke format yang dibutuhkan JS
+            fotoData = data.foto.map(f => ({
+                id: f.id,
+                judul: f.keterangan || 'Tanpa Judul',
+                tahun: f.tahun || '-',
+                filebase64: f.foto ? '/static/uploads/' + f.foto : null,
+                posisi_x: null, // Reset posisi agar diacak ulang saat pindah tahun
+                posisi_y: null
+            }));
+            renderPhotos();
+        }
+    } catch (error) {
+        console.error('Gagal load foto:', error);
+        // ... (tampilan error Anda)
+    } finally {
+        loading.style.display = 'none';
+    }
+}
+    // Fungsi untuk mengecek tabrakan posisi
+    function cekTabrakan(x, y, existingPositions, minJarak = 200) {
+        for (let pos of existingPositions) {
+            const jarak = Math.sqrt(Math.pow(x - pos[0], 2) + Math.pow(y - pos[1], 2));
+            if (jarak < minJarak) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Generate posisi acak
+    function generatePosisi(existingPositions, maxWidth = 1000, maxHeight = 600) {
+        const maxAttempts = 300;
+        const fotoWidth = 220;
+        const fotoHeight = 280;
+        const margin = 30;
+        
+        const maxX = maxWidth - fotoWidth - margin;
+        const maxY = maxHeight - fotoHeight - margin;
+        
+        if (maxX <= margin || maxY <= margin) {
+            return [margin, margin];
+        }
+        
+        for (let i = 0; i < maxAttempts; i++) {
+            const x = Math.floor(Math.random() * (maxX - margin + 1)) + margin;
+            const y = Math.floor(Math.random() * (maxY - margin + 1)) + margin;
+            
+            if (!cekTabrakan(x, y, existingPositions)) {
+                return [x, y];
+            }
+        }
+        
+        // Fallback
+        return [margin, margin];
+    }
+
+    // Render foto ke grid
+    function renderPhotos() {
+        const fotos = fotoData;
+        
+        photoCount.textContent = `${fotos.length} foto`;
+        
+        if (fotos.length === 0) {
+            photoGrid.innerHTML = `
+                <div class="empty-state">
+                    <i class="bi bi-images"></i>
+                    <h4>Tidak Ada Foto</h4>
+                    <p class="text-muted">Belum ada foto untuk ditampilkan</p>
+                </div>
+            `;
+            return;
+        }
+        
+        // Hitung ukuran grid
+        const gridRect = photoGrid.getBoundingClientRect();
+        const gridWidth = Math.max(gridRect.width, 800);
+        const gridHeight = Math.max(gridRect.height, 600);
+        
+        // Kumpulkan posisi yang sudah ada
+        const existingPositions = fotos.map(f => [f.posisi_x, f.posisi_y]).filter(p => p[0] && p[1]);
+        
+        photoGrid.innerHTML = '';
+        
+        fotos.forEach((foto, index) => {
+            // Generate posisi jika belum ada
+            if (!foto.posisi_x || !foto.posisi_y) {
+                const [x, y] = generatePosisi(existingPositions, gridWidth, gridHeight);
+                foto.posisi_x = x;
+                foto.posisi_y = y;
+                existingPositions.push([x, y]);
+            }
+            
+            const card = document.createElement('div');
+            card.className = 'photo-card';
+            card.dataset.id = foto.id;
+            card.dataset.index = index;
+            card.style.left = foto.posisi_x + 'px';
+            card.style.top = foto.posisi_y + 'px';
+            
+            // Tampilkan gambar
+            let imageContent = '';
+            if (foto.filebase64) {
+                imageContent = `<img src="${foto.filebase64}" alt="${foto.judul}">`;
+            } else {
+                imageContent = `<div class="no-image"><i class="bi bi-image"></i></div>`;
+            }
+            
+            card.innerHTML = `
+                <div class="photo-image">
+                    ${imageContent}
+                </div>
+                <div class="photo-caption">
+                    <p>${foto.judul || 'Tanpa Judul'}</p>
+                    <small><i class="bi bi-calendar3"></i> ${foto.tahun || '-'}</small>
+                </div>
+            `;
+            
+            photoGrid.appendChild(card);
+        });
+    }
+
+    // Event klik pada grid
+    photoGrid.addEventListener('click', (e) => {
+        const card = e.target.closest('.photo-card');
+        if (!card) return;
+
+        const isSelected = card.classList.contains('selected');
+
+        if (isSelected) {
+            // Reset semua
+            photoGrid.classList.remove('blur-active');
+            document.querySelectorAll('.photo-card').forEach(c => {
+                c.classList.remove('selected');
+            });
+            galleryWrapper.classList.remove('has-selected');
+        } else {
+            // Fokus ke card yang diklik
+            photoGrid.classList.add('blur-active');
+            document.querySelectorAll('.photo-card').forEach(c => {
+                c.classList.remove('selected');
+            });
+            card.classList.add('selected');
+            galleryWrapper.classList.add('has-selected');
+        }
+    });
+
+    // Reset fokus
+    document.getElementById('resetSelectedBtn').addEventListener('click', () => {
+        photoGrid.classList.remove('blur-active');
+        document.querySelectorAll('.photo-card').forEach(c => {
+            c.classList.remove('selected');
+        });
+        galleryWrapper.classList.remove('has-selected');
+    });
+
+    // Reset posisi
+    document.getElementById('resetPosisiBtn').addEventListener('click', () => {
+        if (!confirm('Acak ulang posisi semua foto?')) return;
+        
+        const gridRect = photoGrid.getBoundingClientRect();
+        const gridWidth = Math.max(gridRect.width, 800);
+        const gridHeight = Math.max(gridRect.height, 600);
+        
+        const existingPositions = [];
+        
+        fotoData.forEach(foto => {
+            const [x, y] = generatePosisi(existingPositions, gridWidth, gridHeight);
+            foto.posisi_x = x;
+            foto.posisi_y = y;
+            existingPositions.push([x, y]);
+        });
+        
+        renderPhotos();
+    });
+
+    // Load foto saat halaman dimuat
+    document.addEventListener('DOMContentLoaded', () => {
+        loadFotoFromServer();
+    });
+
+    // Render ulang saat ukuran window berubah
+    window.addEventListener('resize', () => {
+        renderPhotos();
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,35 @@
+       {% extends 'index.html'%}
+        {% block content %}
+        <a href="{{url_for('image')}}" style="text-decoration: none;">
+        <div class="card-position-wrapper">
+            <div class="folder-school-card">
+                <div class="folder-header-custom">
+                    SMK NEGERI 1 <br> KARANG BARU
+                    
+                    <div class="folder-tab-image">
+                        <img src="../static/image/logo smk.png"
+                            alt="lipatan folder"
+                            title="lipatan folder">
+                    </div>
+                </div>
+
+                <!-- body folder -->
+                <div class="folder-body-custom">
+                    <div class="folder-content text-center">
+                        <i class="bi bi-journal-bookmark-fill"></i>
+                        <p class="fw-semibold" style="color:#1d5555;">📁 Kenangan indah</p>
+                        <p class="text-muted" style="color:#467575 !important;">Area Konten Sekolah</p>
+                        
+                    </div>
+
+                    <!-- footer ikon -->
+                    <div class="folder-footer-custom">
+                        <i class="bi bi-folder"></i>
+                        <i class="bi bi-three-dots-vertical"></i>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        </a>
+        {% endblock %}

@@ -1,0 +1,189 @@
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #6FA8A6;
+      height: 100vh;
+      margin: 0;
+      padding: 0;
+    }
+
+    .login-card {
+      background-color: #e9efef;
+      border-radius: 30px;
+      padding: 40px 40px;
+      width: 100%;
+      max-width: 500px;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Header dengan logo di samping kiri teks */
+    .header-with-logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 15px;
+    }
+
+    .logo-icon {
+      font-size: 3.5rem;
+      color: #6FA8A6;
+      line-height: 1;
+    }
+
+    .header-with-logo h5 {
+      font-weight: 700;
+      color: #2d4e4d;
+      letter-spacing: 0.5px;
+      margin: 0;
+      font-size: 1.4rem;
+      text-align: left;
+    }
+
+    h4 {
+      color: #4a8b89;
+      font-weight: 600;
+      font-size: 1.6rem;
+      margin-bottom: 30px;
+    }
+
+    /* Form fluid - full width */
+    .form-group {
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+      font-weight: 500;
+      color: #3d6b69;
+      margin-bottom: 6px;
+      font-size: 1rem;
+      display: block;
+      text-align: left;
+    }
+
+    /* Input dengan garis hitam */
+    .form-control {
+      width: 100%;
+      border-radius: 50px;
+      padding: 14px 22px;
+      border: 2px solid #000000;  /* Garis hitam */
+      background-color: white;
+      font-size: 1rem;
+      transition: all 0.2s;
+      box-sizing: border-box;
+    }
+
+    .form-control:focus {
+      border-color: #6FA8A6;  /* Berubah jadi warna tema saat focus */
+      box-shadow: 0 0 0 0.25rem rgba(111, 168, 166, 0.25);
+      outline: none;
+    }
+
+    .form-control::placeholder {
+      color: #a0bdbd;
+      font-weight: 300;
+      font-style: italic;
+    }
+
+    /* Tombol fluid - full width */
+    .btn-custom {
+      width: 100%;
+      background-color: #6FA8A6;
+      color: white;
+      border-radius: 50px;
+      padding: 14px 20px;
+      font-weight: 600;
+      font-size: 1.2rem;
+      letter-spacing: 0.5px;
+      border: 2px solid #000000;  /* Garis hitam pada tombol */
+      transition: all 0.3s;
+      margin-top: 15px;
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+    }
+
+    .btn-custom:hover {
+      background-color: #5c9694;
+      color: white;
+      transform: translateY(-3px);
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+      border-color: #000000;  /* Tetap hitam saat hover */
+    }
+
+    .btn-custom:active {
+      transform: translateY(0);
+    }
+
+    /* Footer */
+    .footer-text {
+      margin-top: 30px;
+      font-size: 0.95rem;
+      color: #5d7f7e;
+      text-align: center;
+      width: 100%;
+    }
+
+    .footer-text span {
+      color: #4a8b89;
+      font-weight: 600;
+    }
+
+    /* Garis pemisah opsional (jika ingin garis di antara form) */
+    .form-divider {
+      width: 100%;
+      height: 1px;
+      background-color: #000000;
+      opacity: 0.2;
+      margin: 20px 0;
+    }
+
+    /* Responsive */
+    @media (max-width: 576px) {
+      .login-card {
+        padding: 30px 25px;
+        max-width: 90%;
+      }
+      
+      h4 {
+        font-size: 1.4rem;
+      }
+      
+      .logo-icon {
+        font-size: 3rem;
+      }
+      
+      .header-with-logo h5 {
+        font-size: 1.2rem;
+      }
+      
+      .form-control {
+        padding: 12px 18px;
+      }
+      
+      .btn-custom {
+        padding: 12px 18px;
+        font-size: 1.1rem;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .login-card {
+        padding: 25px 20px;
+      }
+      
+      .header-with-logo {
+        gap: 8px;
+      }
+      
+      .logo-icon {
+        font-size: 2.5rem;
+      }
+      
+      .header-with-logo h5 {
+        font-size: 1rem;
+      }
+      
+      h4 {
+        font-size: 1.3rem;
+      }
+    }
