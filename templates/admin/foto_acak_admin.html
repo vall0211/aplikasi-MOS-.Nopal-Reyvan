@@ -43,9 +43,6 @@
             <i class="bi bi-images"></i>
             <span id="photoCount">0 foto</span>
         </div>
-        <button class="btn-custom" id="resetSelectedBtn">
-            <i class="bi bi-arrow-repeat"></i> Reset Fokus
-        </button>
         <div class="footer-right">
             <i class="bi bi-info-circle"></i>
             <span>Klik foto untuk fokus ke tengah</span>
@@ -279,16 +276,6 @@
             galleryWrapper.classList.add('has-selected');
         }
     });
-
-    // Reset fokus
-    document.getElementById('resetSelectedBtn').addEventListener('click', () => {
-        photoGrid.classList.remove('blur-active');
-        document.querySelectorAll('.photo-card').forEach(c => {
-            c.classList.remove('selected');
-        });
-        galleryWrapper.classList.remove('has-selected');
-    });
-
     // Reset posisi
     document.getElementById('resetPosisiBtn').addEventListener('click', () => {
         if (fotoData.length === 0) return;

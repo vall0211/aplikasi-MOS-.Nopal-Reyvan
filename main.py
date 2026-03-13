@@ -29,8 +29,6 @@ def allowed_file(filename):
     return eksternal_berkas in ['png','jpg','jpeg','gif']
 
 now=datetime.datetime.now()
-    
-    
 
 @app.route('/')
 def index():
@@ -89,6 +87,8 @@ def image():
         if tahun not in grouped_media:
             grouped_media[tahun] = []
         grouped_media[tahun].append(item)
+    cur.close()
+
         
     return render_template('folder/image.html', grouped_media=grouped_media)
 
@@ -194,9 +194,9 @@ def logout():
     return redirect(url_for('login'))
 @app.route('/seeder')
 def seeder():
-    nama = 'nopal'
-    password = '456'
-    email = 'nopal@gmail.com'
+    nama = 'StarDVall'
+    password = 'nauvalsukaannayamada'
+    email = 'YAMADA@gmail.com'
     peran = 'admin'
     
     hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
